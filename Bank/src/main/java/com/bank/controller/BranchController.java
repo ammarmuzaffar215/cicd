@@ -3,6 +3,7 @@ package com.bank.controller;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,15 +18,9 @@ import com.bank.entity.BranchEntity;
 import com.bank.mapper.BranchMapper;
 import com.bank.model.BranchDTO;
 import com.bank.service.IBranchService;
-import com.bank.validation.BranchValidation;
+import com.demo.exceptions.DemoAppException;
 
 import lombok.AllArgsConstructor;
-
-
-@RestController
-@RequestMapping("/api/branches/v1")
-@AllArgsConstructor
-
 
 //Practical 8 - End to End Spring Boot 
 //Create a branch entity with the data below
@@ -61,55 +56,59 @@ import lombok.AllArgsConstructor;
 
 
 //g1 - UnitTesting - Create a BranchSearchTest.java for g2 and g3 above.
-
+@AllArgsConstructor
+@RestController
+@RequestMapping("/api/branchs")
 public class BranchController {
 	
-	//b. BranchController with get by ID, get all, add, and delete by ID only
 	private final IBranchService branchService;
-
-    private final BranchMapper branchMapper;
-    
-	@GetMapping("/{id}")
-	public ResponseEntity<BranchDTO> getBranchById(@PathVariable Long id){
-		BranchEntity branchEntity = branchService.getBranchById(id);
-		return ResponseEntity.ok(branchMapper.toDto(branchEntity));
-	}
+	
+	private final BranchMapper branchMapper;
 	
 	@GetMapping
-    public ResponseEntity<List<BranchDTO>> getAllBranch() {
-		List<BranchEntity> branches = branchService.getAllBranch();
-        return ResponseEntity.ok(branchMapper.toDtoList(branches));
+	public ResponseEntity<List<BranchDTO>> getAllBranchs() {
+		return ResponseEntity.ok(
+			branchMapper.toDtoList(branchService.getAllBranchs())
+		);
+	}
+	
+	@GetMapping("/{id}")
+    public ResponseEntity<BranchDTO> getBranchById(@PathVariable Long id) {
+        return ResponseEntity.ok(
+            branchMapper.toDto(branchService.getBranchById(id))
+        );
     }
 	
-	@PostMapping
-	public ResponseEntity<BranchDTO> createBranch(@RequestBody BranchDTO branchDTO) {
-	    BranchValidation.validateBranchName(branchDTO.getBranchName());
+	@GetMapping("/searchByBranchName")
+    public List<BranchDTO> getBranchsByBranchName(@RequestParam String branchName) {
+        List<BranchEntity> branchs = branchService.getBranchName(branchName);
+        return branchMapper.toDtoList(branchs);
+    }
 
-	    return ResponseEntity.ok(
-	            branchMapper.toDto(
-	                    branchService.createBranch(branchMapper.toEntity(branchDTO))
-	            )
-	    );
-	}
+	@GetMapping("/searchByBranchsByCreationDateBetween")
+    public List<BranchDTO> getBranchsByCreationDateBetween(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+		    List<BranchEntity> branchs = branchService.getByCreationDateBetween(startDate, endDate);
+		    return branchMapper.toDtoList(branchs);
+    }
 
-		
+    @PostMapping
+    public ResponseEntity<BranchDTO> createBranch(@RequestBody BranchDTO branchDto) {
+    	if (branchDto.getBranchName() == null || branchDto.getBranchName().trim().isEmpty()) {
+	        throw new DemoAppException("Branch Name cannot be empty");
+	    }
+        return ResponseEntity.ok(
+            branchMapper.toDto(
+                branchService.createBranch(branchMapper.toEntity(branchDto))
+            )
+        );
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBranch(@PathVariable Long id) {
         branchService.deleteBranch(id);
         return ResponseEntity.noContent().build();
     }
-    
-    // Search branch by name (case-insensitive contains)
-    @GetMapping("/search")
-    public ResponseEntity<List<BranchDTO>> searchByBranchName(@RequestParam String name){
-    	return ResponseEntity.ok(branchMapper.toDtoList(branchService.searchBranchByName(name)));
-    }
-    
- // Search branch by creation date
-    @GetMapping("/search-by-date")
-    public ResponseEntity<List<BranchDTO>> searchByCreationDateRange(@RequestParam LocalDateTime from, @RequestParam LocalDateTime to){
-    	return ResponseEntity.ok(branchMapper.toDtoList(branchService.searchBranchByCreationDateBetween(from, to)));
-    }
-    
+
 }

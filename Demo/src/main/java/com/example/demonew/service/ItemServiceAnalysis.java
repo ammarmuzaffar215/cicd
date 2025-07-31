@@ -1,8 +1,11 @@
-package com.example.demo.service;
+package com.example.demonew.service;
 
 import java.util.List;
 
-import com.example.demo.model.Item;
+import org.springframework.stereotype.Service;
+
+import com.example.demonew.model.Data;
+import com.example.demonew.model.Item;
 
 //TODO: SpringBoot:Practical 5 (Group) - Search function restful services
 
@@ -20,11 +23,16 @@ import com.example.demo.model.Item;
 
 //Hint: Refer to the ItemService.java, Use the getAllItems with passing parameter of "demo" and return objects with "demo" only
 
+@Service
 public class ItemServiceAnalysis {
 
-	// TODO: Complete the code below
-	public List<Item> getAllItemsWithDemo() {
-		return null;
-	}
+    // private final Map<Long, String> dataStore;
 
+    public List<Item> getAllItemsWithDemo() {
+        return Data.getDataStore().entrySet().stream()
+                .filter(entry -> entry.getValue().contains("demo"))
+                .map(entry -> new Item(entry.getKey(), entry.getValue()))
+                .toList();
+    }
 }
+

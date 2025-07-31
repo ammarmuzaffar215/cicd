@@ -1,4 +1,4 @@
-package com.example.demo.exception;
+package com.example.demonew.exception;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +32,24 @@ public class ValidationExceptionHandler {
 
 		if (log.isErrorEnabled()) {
 			log.error("handleRuntimeValidationException Exception handled: {}", responseEntity);
+		}
+		return responseEntity;
+
+	}
+	
+	@ExceptionHandler(NumberFormatException.class)
+	public ResponseEntity<Map<String, Object>> handleNumberFormatException(NumberFormatException ex) {
+
+		Map<String, Object> responseBody = new HashMap<>();
+		responseBody.put("type", "custom exception");
+		responseBody.put("status", HttpStatus.BAD_REQUEST.value());
+		responseBody.put("errors", ex.getMessage());
+
+		ResponseEntity<Map<String, Object>> responseEntity = ResponseEntity.status(HttpStatus.BAD_REQUEST)
+				.body(responseBody);
+
+		if (log.isErrorEnabled()) {
+			log.error("handleNumberFormatException Exception handled: {}", responseEntity);
 		}
 		return responseEntity;
 

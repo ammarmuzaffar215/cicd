@@ -18,7 +18,7 @@ import com.bank.entity.CustomerEntity;
 @SpringBootTest
 @ActiveProfiles("test") // Uses application-test.properties for H2 setup
 
-public class CustomerRepoTest {
+ class CustomerRepoTest {
 
     @Autowired
     private ICustomerRepo customerRepo;
@@ -27,7 +27,7 @@ public class CustomerRepoTest {
     @Order(1)
     void testCreateCustomer() {
         CustomerEntity customer = new CustomerEntity();
-        customer.setIcNumber("IC123456");
+        customer.setIcNumber("IC123456-" + System.nanoTime());        
         customer.setLastname("Doe");
         customer.setSurname("John");
         customer.setDescription("Test customer");

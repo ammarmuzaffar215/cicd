@@ -1,4 +1,4 @@
-package com.example.demo.controller;
+package com.example.demonew.controller;
 
 import java.util.List;
 
@@ -13,21 +13,23 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.model.Item;
-import com.example.demo.service.ItemService;
-import com.example.demo.util.ResponseEntityUtil;
-import com.example.demo.validation.ItemValidation;
+import com.example.demonew.model.Item;
+import com.example.demonew.service.ItemService;
+import com.example.demonew.util.ResponseEntityUtil;
+import com.example.demonew.validation.ItemValidation;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 @RestController
 @RequestMapping("/demo/v2")
 public class CRUDControllerRefined {
 
     private final ItemService itemService;
     
-    private static String ID_ITEM =  "Item with ID: ";
-    public CRUDControllerRefined(ItemService itemService) {
-        this.itemService = itemService;
-    }
+//    public CRUDControllerRefined(ItemService itemService) {
+//        this.itemService = itemService;
+//    }
 
     // --- CREATE (Auto-generated ID) ---
     @PostMapping
@@ -45,10 +47,16 @@ public class CRUDControllerRefined {
 
     // --- READ (By ID) ---
     @GetMapping("/{id}")
-    public ResponseEntity<String> getItemById(@PathVariable Long id) {
-        return itemService.getItemById(id)
+    public ResponseEntity<String> getItemById(@PathVariable String id) {
+    	ItemValidation.parseAndValidateLongId(id);
+        return itemService.getItemById(Long.valueOf(id))
                 .map(item -> ResponseEntityUtil.buildResponse("Found item with ID: " + item.id() + " and data: " + item.value(), HttpStatus.OK))
-                .orElseGet(() -> ResponseEntityUtil.buildResponse(CRUDControllerRefined.ID_ITEM + id + " not found.", HttpStatus.NOT_FOUND));
+                .orElseGet(() -> ResponseEntityUtil.buildResponse("Item with ID: " + id + " not found.", HttpStatus.NOT_FOUND));
+    }
+    
+    @GetMapping("/getDemoOnly")
+    public ResponseEntity<List<Item>> getDemoOnly() {
+        return ResponseEntity.ok(itemService.getDemoOnly());
     }
 
     // --- UPDATE ---
@@ -56,8 +64,8 @@ public class CRUDControllerRefined {
     public ResponseEntity<String> updateItem(@PathVariable Long id, @RequestBody String updatedName) {
         ItemValidation.validateItemName(updatedName);
         return itemService.updateItem(id, updatedName)
-                .map(item -> ResponseEntityUtil.buildResponse(CRUDControllerRefined.ID_ITEM + item.id() + " updated successfully to: " + item.value(), HttpStatus.OK))
-                .orElseGet(() -> ResponseEntityUtil.buildResponse(CRUDControllerRefined.ID_ITEM + id + " not found for update.", HttpStatus.NOT_FOUND));
+                .map(item -> ResponseEntityUtil.buildResponse("Item with ID: " + item.id() + " updated successfully to: " + item.value(), HttpStatus.OK))
+                .orElseGet(() -> ResponseEntityUtil.buildResponse("Item with ID: " + id + " not found for update.", HttpStatus.NOT_FOUND));
     }
 
     // --- DELETE ---

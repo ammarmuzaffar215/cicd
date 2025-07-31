@@ -10,11 +10,12 @@ import com.bank.model.BranchDTO;
 @Mapper
 public interface BranchMapper {
 	
-	BranchDTO toDto(BranchEntity entity);
-	
-	BranchEntity toEntity(BranchDTO dto);
-	
-    List<BranchDTO> toDtoList(List<BranchEntity> entityList);
+	 BranchDTO toDto(BranchEntity entity);
 
-    List<BranchEntity> toEntityList(List<BranchDTO> dtoList);
+	 BranchEntity toEntity(BranchDTO dto);
+
+	 List<BranchDTO> toDtoList(List<BranchEntity> entityList);
+
+	 List<BranchEntity> toEntityList(List<BranchDTO> dtoList);
+
 }

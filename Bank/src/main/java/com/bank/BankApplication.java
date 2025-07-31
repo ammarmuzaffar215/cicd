@@ -7,15 +7,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication(scanBasePackages = {
 		"com.bank",
 		"com.demo.exceptions",
-		"com.demo.util.config",
-
+		"com.demo.util.config"
 	})
 public class BankApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(BankApplication.class, args);
-
 	}
-	
 
 }

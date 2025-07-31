@@ -4,13 +4,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import jakarta.annotation.PreDestroy;
+import lombok.extern.slf4j.Slf4j;
 
 @Configuration
+@Slf4j
 public class TerminateBean {
 
     @PreDestroy
     public void onDestroy() {
-        System.out.println("Spring Container is destroyed!");
+        log.error("Spring Container is destroyed!");
     }
     
     @Bean

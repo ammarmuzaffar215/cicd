@@ -1,46 +1,51 @@
-package com.example.demo.service;
+package com.example.demonew.service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.stereotype.Service;
 
-import com.example.demo.model.Item;
+import com.example.demonew.model.Data;
+import com.example.demonew.model.Item;
 
 @Service // Mark this as a Spring service component
 public class ItemService {
 
-	private final Map<Long, String> dataStore = new ConcurrentHashMap<>();
 	private final AtomicLong idCounter = new AtomicLong();
 
 	public Item createItem(String value) {
 		// Validation is now handled by ItemValidation in the controller,
 		// but we might add more complex business rules here if needed.
 		long newId = idCounter.incrementAndGet();
-		dataStore.put(newId, value);
+		Data.getDataStore().put(newId, value);
 		return new Item(newId, value);
 	}
 
 	public Optional<Item> createItemWithProvidedId(Long id, String value) {
 		// Business rule: if ID already exists, we consider it a conflict for creation.
-		if (dataStore.containsKey(id)) {
+		if (Data.getDataStore().containsKey(id)) {
 			return Optional.empty(); // Indicate that creation failed due to conflict
 		}
-		dataStore.put(id, value);
+		Data.getDataStore().put(id, value);
 		return Optional.of(new Item(id, value));
 	}
 
 	public Optional<Item> getItemById(Long id) {
-		return Optional.ofNullable(dataStore.get(id)).map(value -> new Item(id, value));
+		return Optional.ofNullable(Data.getDataStore().get(id)).map(value -> new Item(id, value));
 	}
 
 	public List<Item> getAllItems() {
-	    return dataStore.entrySet().stream()
+	    return Data.getDataStore().entrySet().stream()
 	            .map(entry -> new Item(entry.getKey(), entry.getValue()))
 	            .toList();  
+	}
+	
+	public List<Item> getDemoOnly() {
+	    return Data.getDataStore().entrySet().stream()
+	    		.filter(entry -> entry.getValue().contains("demo"))
+                .map(entry -> new Item(entry.getKey(), entry.getValue()))
+                .toList();
 	}
 
     public Optional<Item> updateItem(Long id, String newValue) {
@@ -49,7 +54,7 @@ public class ItemService {
         // Using computeIfPresent to update the item if the key exists.
         // The lambda function returns the newValue, which will replace the existing value.
         // If the key is not present, the lambda is not executed, and computeIfPresent returns null.
-        String updatedValue = dataStore.computeIfPresent(id, (key, existingValue) -> newValue);
+        String updatedValue = Data.getDataStore().computeIfPresent(id, (key, existingValue) -> newValue);
 
         if (updatedValue != null) {
             // If updatedValue is not null, it means the key was present and the value was updated.
@@ -61,6 +66,6 @@ public class ItemService {
     }
 
 	public boolean deleteItem(Long id) {
-		return dataStore.remove(id) != null;
+		return Data.getDataStore().remove(id) != null;
 	}
 }

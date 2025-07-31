@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.demo.utility.classes.ResponseEntityUtil;
+import com.demo.utility_classes.ResponseEntityUtil;
 
 import lombok.extern.slf4j.Slf4j;
 

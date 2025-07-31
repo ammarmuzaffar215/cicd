@@ -15,7 +15,8 @@ public class AccountDTO {
     private String accountNumber;
     private Double balance;
     private LocalDateTime creationDate;
-    private CustomerDTO customerDTO;
-    private ProductDTO productDTO;
 
+    private CustomerDTO customerDTO;
+
+    private ProductDTO productDTO;
 }
