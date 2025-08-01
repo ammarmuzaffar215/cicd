@@ -21,6 +21,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: 1234
       MYSQL_DATABASE: spring
+      MYSQL_TCP_PORT: 3308
     volumes:
       - mysql-data:/var/lib/mysql
       - ./MySQL:/docker-entrypoint-initdb.d
